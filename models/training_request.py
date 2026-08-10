@@ -133,7 +133,7 @@ class HcdiTrainingRequest(models.Model):
             if participant_partners:
                 new_course._action_add_members(participant_partners)
 
-            # 3. Otomatis mendaftarkan seluruh Calon Peserta ke Progres Training (hcdi.training.history) dengan status 'draft'
+            # 3. Otomatis mendaftarkan seluruh Calon Peserta ke Progres Training (hcdi.training.history) dengan status 'draft'///
             history_obj = self.env['hcdi.training.history']
             created_count = 0
             for participant in rec.target_participant_ids:
