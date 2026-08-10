@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit Employee Form View to add Training History Tab and Smart Button -->
+    <record id="view_employee_form_inherit_hcdi_training" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.hcdi.training</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <!-- Add Smart Button in Employee Stat Button box -->
+            <div name="button_box" position="inside">
+                <button name="action_view_training_history"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-graduation-cap">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="passed_training_count"/> / <field name="training_count"/>
+                        </span>
+                        <span class="o_stat_text">Training Lulus</span>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Add Tab "Training & Kompetensi" inside Notebook -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Riwayat Training &amp; Kompetensi" name="hcdi_training_tab">
+                    <field name="training_history_ids">
+                        <list string="Riwayat Training" create="true" delete="true">
+                            <field name="channel_id"/>
+                            <field name="completion_date"/>
+                            <field name="score_pretest"/>
+                            <field name="score_quiz"/>
+                            <field name="score_posttest"/>
+                            <field name="final_score"/>
+                            <field name="passing_grade"/>
+                            <field name="state" widget="badge"
+                                   decoration-success="state == 'passed'"
+                                   decoration-danger="state == 'failed'"
+                                   decoration-info="state == 'draft'"/>
+                            <field name="certificate_number"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

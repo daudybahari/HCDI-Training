@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View for Training Request -->
+    <record id="view_hcdi_training_request_tree" model="ir.ui.view">
+        <field name="name">hcdi.training.request.list</field>
+        <field name="model">hcdi.training.request</field>
+        <field name="arch" type="xml">
+            <list string="Pengajuan Training (Approval)">
+                <field name="name"/>
+                <field name="manager_id"/>
+                <field name="department_id"/>
+                <field name="estimated_date"/>
+                <field name="trainer_id"/>
+                <field name="approval_state" widget="badge"
+                       decoration-success="approval_state == 'approved'"
+                       decoration-danger="approval_state == 'reject'"
+                       decoration-warning="approval_state == 'waiting'"
+                       decoration-info="approval_state == 'draft'"/>
+                <field name="course_id"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View for Training Request -->
+    <record id="view_hcdi_training_request_form" model="ir.ui.view">
+        <field name="name">hcdi.training.request.form</field>
+        <field name="model">hcdi.training.request</field>
+        <field name="arch" type="xml">
+            <form string="Pengajuan Training / TNA">
+                <header>
+                    <button name="action_submit_for_approval"
+                            type="object"
+                            string="Kirim ke Workflow Approval"
+                            class="btn-primary"
+                            invisible="approval_state in ['waiting', 'approved', 'reject']"/>
+                    
+                    <button name="action_create_course"
+                            type="object"
+                            string="Buat Course eLearning"
+                            class="btn-success"
+                            invisible="approval_state != 'approved' or course_id"/>
+                    
+                    <field name="approval_state" widget="statusbar" statusbar_visible="draft,waiting,approved,reject"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Judul Pengajuan Training"/>
+                        <h1>
+                            <field name="name" placeholder="Contoh: Pengajuan Training Data Analytics..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="1. Informasi Pengajuan">
+                            <field name="manager_id"/>
+                            <field name="department_id"/>
+                            <field name="estimated_date"/>
+                        </group>
+                        <group string="2. Workflow Approval HR L&amp;D">
+                            <field name="approval_team_id" required="1"/>
+                            <field name="approval_id" readonly="1"/>
+                            <field name="course_id" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <!-- Section Khusus Penetapan HR L&D setelah Approved -->
+                    <group string="3. Penetapan Trainer Pelatihan" invisible="approval_state != 'approved'">
+                        <field name="trainer_id" placeholder="Pilih Trainer / Instruktur..."/>
+                    </group>
+
+                    <notebook>
+                        <page string="Alasan &amp; Kebutuhan (TNA)" name="reason_page">
+                            <field name="reason" placeholder="Jelaskan kebutuhan pelatihan ini..."/>
+                        </page>
+                        <page string="Calon Peserta Training" name="participants_page">
+                            <field name="target_participant_ids">
+                                <list string="Daftar Calon Peserta">
+                                    <field name="name"/>
+                                    <field name="department_id"/>
+                                    <field name="job_id"/>
+                                    <field name="work_email"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action Window for Training Request -->
+    <record id="action_hcdi_training_request" model="ir.actions.act_window">
+        <field name="name">Pengajuan Training (Approval)</field>
+        <field name="res_model">hcdi.training.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Belum ada pengajuan training. Klik 'New' untuk membuat pengajuan baru.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menuitem for Training Request -->
+    <menuitem id="menu_hcdi_training_request_list"
+              name="Pengajuan Training (TNA)"
+              parent="menu_hcdi_training_operations"
+              action="action_hcdi_training_request"
+              sequence="10"/>
+</odoo>

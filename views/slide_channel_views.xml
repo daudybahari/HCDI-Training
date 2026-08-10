@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit Slide Channel Form View to add Weighted Scoring configuration & Training Details -->
+    <record id="view_slide_channel_form_inherit_hcdi" model="ir.ui.view">
+        <field name="name">slide.channel.form.inherit.hcdi</field>
+        <field name="model">slide.channel</field>
+        <field name="inherit_id" ref="website_slides.view_slide_channel_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Konfigurasi Penilaian &amp; Bobot" name="hcdi_scoring_weights">
+                    <group>
+                        <group string="Persentase Bobot Penilaian (Total harus 100%)">
+                            <field name="weight_pretest"/>
+                            <field name="weight_quiz"/>
+                            <field name="weight_posttest"/>
+                        </group>
+                        <group string="Standar Kelulusan">
+                            <field name="passing_grade"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action Window for Management Training / Course -->
+    <record id="action_hcdi_slide_channel" model="ir.actions.act_window">
+        <field name="name">Manajemen Pelatihan (Course)</field>
+        <field name="res_model">slide.channel</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Belum ada pelatihan (course) yang dibuat. Course dapat dibuat dari Pengajuan Training (TNA) yang sudah Approved.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menuitem for Course Management under Operasional Training -->
+    <menuitem id="menu_hcdi_slide_channel_list"
+              name="Manajemen Pelatihan (Course)"
+              parent="menu_hcdi_training_operations"
+              action="action_hcdi_slide_channel"
+              sequence="15"/>
+</odoo>

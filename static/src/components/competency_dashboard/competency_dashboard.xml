@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="hcdi_training.CompetencyDashboard">
+        <div class="hcdi_dashboard_container p-4">
+            <!-- Header Title -->
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                <div>
+                    <h2 class="hcdi_title font-weight-bold mb-0">
+                        <i class="fa fa-tachometer text-primary mr-2"/>Dashboard Monitoring Kompetensi Karyawan
+                    </h2>
+                    <p class="text-muted small mb-0">PT Human Capital Development Indonesia - Real-time Analytics</p>
+                </div>
+                <button class="btn btn-primary btn-sm rounded-pill px-3" t-on-click="openTrainingHistory">
+                    <i class="fa fa-list mr-1"/> Lihat Detail Riwayat
+                </button>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div t-if="state.loading" class="text-center my-5 py-5">
+                <i class="fa fa-circle-o-notch fa-spin fa-3x text-primary"/>
+                <p class="mt-2 text-muted">Memuat data agregasi kompetensi...</p>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div t-else="">
+                <!-- KPI Summary Cards -->
+                <div class="row mb-4">
+                    <!-- Total Karyawan -->
+                    <div class="col-md-3 mb-3">
+                        <div class="card hcdi_kpi_card bg-gradient-navy text-white shadow-sm rounded">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="kpi_icon_wrapper mr-3">
+                                    <i class="fa fa-users fa-2x"/>
+                                </div>
+                                <div>
+                                    <div class="text-uppercase small text-white-50 font-weight-bold">Total Karyawan</div>
+                                    <h3 class="font-weight-bold mb-0" t-esc="state.data.total_employees"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Training Terlaksana -->
+                    <div class="col-md-3 mb-3">
+                        <div class="card hcdi_kpi_card bg-gradient-blue text-white shadow-sm rounded">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="kpi_icon_wrapper mr-3">
+                                    <i class="fa fa-book fa-2x"/>
+                                </div>
+                                <div>
+                                    <div class="text-uppercase small text-white-50 font-weight-bold">Total Sesi Training</div>
+                                    <h3 class="font-weight-bold mb-0" t-esc="state.data.total_trainings"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sertifikat Diterbitkan -->
+                    <div class="col-md-3 mb-3">
+                        <div class="card hcdi_kpi_card bg-gradient-green text-white shadow-sm rounded">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="kpi_icon_wrapper mr-3">
+                                    <i class="fa fa-certificate fa-2x"/>
+                                </div>
+                                <div>
+                                    <div class="text-uppercase small text-white-50 font-weight-bold">Peserta Lulus</div>
+                                    <h3 class="font-weight-bold mb-0" t-esc="state.data.passed_count"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rasio Kelulusan % -->
+                    <div class="col-md-3 mb-3">
+                        <div class="card hcdi_kpi_card bg-gradient-gold text-white shadow-sm rounded">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="kpi_icon_wrapper mr-3">
+                                    <i class="fa fa-trophy fa-2x"/>
+                                </div>
+                                <div>
+                                    <div class="text-uppercase small text-white-50 font-weight-bold">Tingkat Kelulusan</div>
+                                    <h3 class="font-weight-bold mb-0"><t t-esc="state.data.pass_rate"/>%</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Two Column Details -->
+                <div class="row">
+                    <!-- Progress Per Divisi -->
+                    <div class="col-lg-8 mb-4">
+                        <div class="card shadow-sm border-0 rounded">
+                            <div class="card-header bg-white font-weight-bold d-flex align-items-center">
+                                <i class="fa fa-sitemap text-primary mr-2"/>Ringkasan Performa Kompetensi Per Divisi
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-striped mb-0">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>Divisi / Departemen</th>
+                                                <th class="text-center">Total Peserta</th>
+                                                <th class="text-center">Peserta Lulus</th>
+                                                <th class="text-center">Rata-rata Nilai</th>
+                                                <th class="text-center">Tingkat Kelulusan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="state.data.departments" t-as="dept" t-key="dept.id">
+                                                <td class="font-weight-bold" t-esc="dept.name"/>
+                                                <td class="text-center" t-esc="dept.total_participants"/>
+                                                <td class="text-center text-success font-weight-bold" t-esc="dept.passed_count"/>
+                                                <td class="text-center"><span class="badge badge-info" t-esc="dept.avg_score"/></td>
+                                                <td class="text-center">
+                                                    <div class="progress" style="height: 18px;">
+                                                        <div class="progress-bar bg-success"
+                                                             t-att-style="'width: ' + dept.pass_rate + '%;'"
+                                                             t-esc="dept.pass_rate + '%'"/>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr t-if="!state.data.departments.length">
+                                                <td colspan="5" class="text-center text-muted py-4">Belum ada data kompetensi per divisi.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity Log -->
+                    <div class="col-lg-4 mb-4">
+                        <div class="card shadow-sm border-0 rounded">
+                            <div class="card-header bg-white font-weight-bold d-flex align-items-center">
+                                <i class="fa fa-history text-warning mr-2"/>Aktivitas Penilaian Terkini
+                            </div>
+                            <div class="card-body p-3">
+                                <div class="recent_activity_list">
+                                    <div t-foreach="state.data.recent_activities" t-as="act" t-key="act.id" class="mb-3 pb-2 border-bottom">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="font-weight-bold text-dark" t-esc="act.employee_name"/>
+                                            <span t-if="act.state == 'passed'" class="badge badge-success">Lulus</span>
+                                            <span t-elif="act.state == 'failed'" class="badge badge-danger">Tidak Lulus</span>
+                                            <span t-else="" class="badge badge-secondary">Draft</span>
+                                        </div>
+                                        <div class="small text-muted" t-esc="act.channel_name"/>
+                                        <div class="small text-primary font-weight-bold mt-1">
+                                            Nilai: <t t-esc="act.final_score"/> | <t t-esc="act.date"/>
+                                        </div>
+                                    </div>
+                                    <div t-if="!state.data.recent_activities.length" class="text-center text-muted py-4">
+                                        Belum ada aktivitas penilaian.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

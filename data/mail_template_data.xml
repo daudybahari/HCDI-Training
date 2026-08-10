@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Template Email Otomatis Pengiriman Sertifikat -->
+    <record id="email_template_hcdi_certificate" model="mail.template">
+        <field name="name">HCDI Training: Sertifikat Kelulusan Peserta</field>
+        <field name="model_id" ref="model_hcdi_training_history"/>
+        <field name="subject">Selamat! Sertifikat Kelulusan Training: {{ object.channel_id.name }}</field>
+        <field name="email_from">{{ (object.trainer_id.email_formatted or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email }}</field>
+        <field name="description">Template email otomatis saat peserta lulus training</field>
+        <field name="body_html" type="html">
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <h2 style="color: #1a365d;">Selamat, <t t-out="object.employee_id.name"/>!</h2>
+                <p>Selamat atas kelulusan Anda dalam program pelatihan:</p>
+                <div style="background-color: #f7fafc; padding: 15px; border-left: 4px solid #2b6cb0; margin: 15px 0;">
+                    <p style="margin: 0; font-size: 16px; font-weight: bold; color: #2b6cb0;">
+                        <t t-out="object.channel_id.name"/>
+                    </p>
+                    <p style="margin: 5px 0 0 0; color: #4a5568;">
+                        Nilai Akhir Berbobot: <strong style="color: #2f855a;"><t t-out="object.final_score"/></strong> | Status: <strong style="color: #2f855a;">LULUS</strong>
+                    </p>
+                    <p style="margin: 5px 0 0 0; color: #718096; font-size: 13px;">
+                        Nomor Sertifikat: <t t-out="object.certificate_number"/>
+                    </p>
+                </div>
+                <p>Sertifikat resmi Anda telah diterbitkan secara otomatis dan dapat Anda unduh dari lampiran email ini atau melalui halaman profil karyawan Anda di sistem Odoo ERP.</p>
+                <br/>
+                <p style="color: #718096; font-size: 12px; border-top: 1px solid #e2e8f0; padding-top: 10px;">
+                    Pesan ini dikirimkan secara otomatis oleh Aplikasi Pengelolaan Training PT Human Capital Development Indonesia.
+                </p>
+            </div>
+        </field>
+        <field name="auto_delete" eval="False"/>
+    </record>
+</odoo>

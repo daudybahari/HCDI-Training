@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Root Menu HCDI Training -->
+    <menuitem id="menu_hcdi_training_root"
+              name="HCDI Training"
+              web_icon="hcdi_training,static/description/icon.png"
+              sequence="10"/>
+
+    <!-- Sub-menu Configuration / Operations -->
+    <menuitem id="menu_hcdi_training_operations"
+              name="Operasional Training"
+              parent="menu_hcdi_training_root"
+              sequence="10"/>
+
+    <menuitem id="menu_hcdi_training_reporting"
+              name="Laporan &amp; Monitoring"
+              parent="menu_hcdi_training_root"
+              sequence="20"/>
+</odoo>
