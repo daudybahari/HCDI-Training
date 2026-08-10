@@ -6,7 +6,7 @@
               web_icon="hcdi_training,static/description/icon.png"
               sequence="10"/>
 
-    <!-- Sub-menu Configuration / Operations -->
+    <!-- Sub-menu Configuration / operations -->
     <menuitem id="menu_hcdi_training_operations"
               name="Operasional Training"
               parent="menu_hcdi_training_root"
