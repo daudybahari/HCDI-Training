@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Paperformat Landscape A4 for Certificate -->
-    <record id="paperformat_hcdi_certificate_landscape" model="report.paperformat">
-        <field name="name">HCDI Certificate Landscape A4</field>
+    <!-- Paperformat A4 Landscape untuk Sertifikat -->
+    <record id="paperformat_hcdi_certificate_a4" model="report.paperformat">
+        <field name="name">HCDI Certificate A4 Landscape</field>
         <field name="default" eval="False"/>
         <field name="format">A4</field>
         <field name="orientation">Landscape</field>
-        <field name="margin_top">8</field>
-        <field name="margin_bottom">8</field>
-        <field name="margin_left">8</field>
-        <field name="margin_right">8</field>
+        <field name="margin_top">0</field>
+        <field name="margin_bottom">0</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
         <field name="header_line" eval="False"/>
         <field name="header_spacing">0</field>
-        <field name="dpi">90</field>
+        <field name="dpi">96</field>
     </record>
 
     <!-- Action Report PDF -->
@@ -22,85 +22,21 @@
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">hcdi_training.report_hcdi_certificate_document</field>
         <field name="report_file">hcdi_training.report_hcdi_certificate_document</field>
-        <field name="paperformat_id" ref="paperformat_hcdi_certificate_landscape"/>
+        <field name="paperformat_id" ref="paperformat_hcdi_certificate_a4"/>
         <field name="print_report_name">'Sertifikat - %s - %s' % (object.employee_id.name, object.channel_id.name)</field>
         <field name="binding_model_id" ref="model_hcdi_training_history"/>
         <field name="binding_type">report</field>
     </record>
 
-    <!-- QWeb PDF Template -->
+    <!-- Note: Sertifikat PDF utama digenerate secara presisi via Python ReportLab di training_history.py -->
     <template id="report_hcdi_certificate_document">
         <t t-call="web.basic_layout">
             <t t-foreach="docs" t-as="o">
-                <div class="page" style="width: 100%; box-sizing: border-box; font-family: 'Times New Roman', Times, Georgia, serif; position: relative;">
-                    <!-- Outer Navy & Gold Frame -->
-                    <div style="border: 6px solid #0F2C59; padding: 12px; border-radius: 4px; box-sizing: border-box;">
-                        <div style="border: 2px solid #C5A059; padding: 25px 40px; text-align: center; background: #FAF9F6; box-sizing: border-box;">
-                            
-                            <!-- Header Company Name (Smaller, Elegant) -->
-                            <div style="margin-top: 5px; margin-bottom: 10px;">
-                                <h4 style="color: #0F2C59; font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0;">
-                                    PT HUMAN CAPITAL DEVELOPMENT INDONESIA
-                                </h4>
-                                <div style="width: 100px; height: 2px; background: #C5A059; margin: 6px auto 0 auto;"></div>
-                            </div>
-
-                            <!-- Title -->
-                            <div style="margin-top: 15px; margin-bottom: 5px;">
-                                <h1 style="color: #0F2C59; font-size: 32px; font-weight: bold; letter-spacing: 4px; text-transform: uppercase; margin: 0; font-family: Georgia, serif;">
-                                    SERTIFIKAT KELULUSAN
-                                </h1>
-                                <p style="color: #555555; font-size: 12px; margin-top: 5px; font-family: 'Helvetica Neue', Arial, sans-serif; letter-spacing: 1px;">
-                                    Nomor Sertifikat: <strong t-field="o.certificate_number" style="color: #0F2C59;"/>
-                                </p>
-                            </div>
-
-                            <!-- Body Content -->
-                            <p style="font-size: 14px; color: #444444; font-style: italic; margin-top: 18px; margin-bottom: 5px;">
-                                Diberikan secara resmi kepada:
-                            </p>
-
-                            <h2 style="color: #0F2C59; font-size: 28px; font-weight: bold; margin: 8px 0; font-family: Georgia, serif; letter-spacing: 1px;">
-                                <span t-field="o.employee_id.name"/>
-                            </h2>
-                            <div style="width: 220px; height: 1px; background: #C5A059; margin: 0 auto 15px auto;"></div>
-
-                            <p style="font-size: 14px; color: #444444; margin-top: 12px; margin-bottom: 5px;">
-                                Atas keberhasilan dan kelulusan dalam mengikuti program pelatihan:
-                            </p>
-
-                            <h3 style="color: #1A365D; font-size: 22px; font-weight: bold; margin: 8px 0; font-family: Georgia, serif;">
-                                "<span t-field="o.channel_id.name"/>"
-                            </h3>
-
-                            <p style="font-size: 14px; color: #444444; margin-top: 12px;">
-                                Dengan Nilai Akhir Berbobot: <strong style="color: #2F855A; font-size: 16px;"><span t-field="o.final_score"/></strong>
-                            </p>
-
-                            <!-- Footer Signatures (Option 1) -->
-                            <table style="width: 100%; margin-top: 35px; text-align: center;">
-                                <tr>
-                                    <td style="width: 45%; vertical-align: bottom;">
-                                        <p style="color: #555555; font-size: 13px; margin-bottom: 50px;">Trainer / Instruktur,</p>
-                                        <p style="font-weight: bold; color: #0F2C59; font-size: 15px; margin: 0; text-decoration: underline;">
-                                            <span t-field="o.trainer_id.name"/>
-                                        </p>
-                                    </td>
-                                    <td style="width: 10%;"></td>
-                                    <td style="width: 45%; vertical-align: bottom;">
-                                        <p style="color: #555555; font-size: 13px; margin: 0;">
-                                            Jakarta, <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d %B %Y')"/>
-                                        </p>
-                                        <p style="color: #555555; font-size: 13px; margin-top: 2px; margin-bottom: 40px;">Head of HR L&amp;D,</p>
-                                        <p style="font-weight: bold; color: #0F2C59; font-size: 15px; margin: 0; text-decoration: underline;">
-                                            Ahmad Fauzi
-                                        </p>
-                                    </td>
-                                </tr>
-                            </table>
-
-                        </div>
-                    </div>
+                <div class="page" style="text-align: center; padding-top: 50px;">
+                    <h2>Sertifikat Kelulusan HCDI</h2>
+                    <p>Peserta: <t t-esc="o.employee_id.name"/></p>
+                    <p>Pelatihan: <t t-esc="o.channel_id.name"/></p>
+                    <p>Nomor Sertifikat: <t t-esc="o.certificate_number"/></p>
                 </div>
             </t>
         </t>

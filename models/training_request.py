@@ -50,6 +50,14 @@ class HcdiTrainingRequest(models.Model):
         'hr.employee',
         string='Calon Peserta Training'
     )
+    attachment_ids = fields.Many2many(
+        'ir.attachment',
+        'hcdi_training_request_attachment_rel',
+        'request_id',
+        'attachment_id',
+        string='Dokumen Pendukung / File Attachment',
+        help='Upload file PDF, Word, Excel, atau bukti email pengajuan training'
+    )
 
     # Integrasi dengan Modul Document Approval (Cybrosys)
     approval_team_id = fields.Many2one(
@@ -92,6 +100,15 @@ class HcdiTrainingRequest(models.Model):
                     'approve_initiator_id': rec.create_uid.id or self.env.uid,
                 })
                 rec.approval_id = doc_approval.id
+
+                # Copy file attachment pendukung dari Pengajuan ke Dokumen Approval Cybrosys
+                if rec.attachment_ids:
+                    for att in rec.attachment_ids:
+                        self.env['document.approval.file'].create({
+                            'approval_id': doc_approval.id,
+                            'name': att.name,
+                            'file': att.datas,
+                        })
             
             # Kirim dokumen approval ke status waiting
             rec.approval_id.action_send_for_approval()

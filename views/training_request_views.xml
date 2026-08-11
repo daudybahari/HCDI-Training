@@ -30,7 +30,7 @@
                 <header>
                     <button name="action_submit_for_approval"
                             type="object"
-                            string="Kirim ke Workflow Approval"
+                            string="Kirim Pengajuan"
                             class="btn-primary"
                             invisible="approval_state in ['waiting', 'approved', 'reject']"/>
                     
@@ -80,6 +80,9 @@
                                     <field name="work_email"/>
                                 </list>
                             </field>
+                        </page>
+                        <page string="Dokumen Pendukung / File Attachment" name="attachments_page">
+                            <field name="attachment_ids" widget="many2many_binary" string="Upload Dokumen / Bukti Email"/>
                         </page>
                     </notebook>
                 </sheet>

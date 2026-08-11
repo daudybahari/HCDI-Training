@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import base64
+import datetime
+from io import BytesIO
+from reportlab.lib.pagesizes import landscape, A4
+from reportlab.lib import colors
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import mm
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
@@ -257,20 +263,151 @@ class HcdiTrainingHistory(models.Model):
             if update_vals:
                 rec.write(update_vals)
 
+    def _generate_reportlab_certificate_pdf(self):
+        """Meng-generate PDF Sertifikat A4 Landscape secara 100% presisi dengan ReportLab Python."""
+        self.ensure_one()
+        buffer = BytesIO()
+        width, height = landscape(A4)
+        c = canvas.Canvas(buffer, pagesize=landscape(A4))
+        
+        # 1. Background Fill (#FAF9F6)
+        c.setFillColor(colors.HexColor('#FAF9F6'))
+        c.rect(0, 0, width, height, stroke=0, fill=1)
+        
+        # 2. Bingkai Luar Navy Blue (#0F2C59) - Margin 6mm
+        m_outer = 6 * mm
+        c.setStrokeColor(colors.HexColor('#0F2C59'))
+        c.setLineWidth(5)
+        c.rect(m_outer, m_outer, width - 2 * m_outer, height - 2 * m_outer, stroke=1, fill=0)
+        
+        # 3. Bingkai Dalam Gold (#C5A059) - Margin 10mm
+        m_inner = 10 * mm
+        c.setStrokeColor(colors.HexColor('#C5A059'))
+        c.setLineWidth(2)
+        c.rect(m_inner, m_inner, width - 2 * m_inner, height - 2 * m_inner, stroke=1, fill=0)
+        
+        center_x = width / 2.0
+        
+        # --- Header: Nama Perusahaan ---
+        c.setFillColor(colors.HexColor('#0F2C59'))
+        c.setFont("Helvetica-Bold", 16)
+        c.drawCentredString(center_x, height - 28 * mm, "PT HUMAN CAPITAL DEVELOPMENT INDONESIA")
+        
+        # Garis emas di bawah nama perusahaan
+        c.setStrokeColor(colors.HexColor('#C5A059'))
+        c.setLineWidth(1.5)
+        c.line(center_x - 30 * mm, height - 32 * mm, center_x + 30 * mm, height - 32 * mm)
+        
+        # --- Judul: SERTIFIKAT KELULUSAN ---
+        c.setFillColor(colors.HexColor('#0F2C59'))
+        c.setFont("Times-Bold", 34)
+        c.drawCentredString(center_x, height - 50 * mm, "SERTIFIKAT KELULUSAN")
+        
+        # --- Nomor Sertifikat ---
+        cert_num = self.certificate_number or ''
+        c.setFillColor(colors.HexColor('#555555'))
+        c.setFont("Helvetica", 11)
+        c.drawCentredString(center_x, height - 59 * mm, f"Nomor Sertifikat: {cert_num}")
+        
+        # --- Subtitle ---
+        c.setFillColor(colors.HexColor('#444444'))
+        c.setFont("Times-Italic", 14)
+        c.drawCentredString(center_x, height - 76 * mm, "Diberikan secara resmi kepada:")
+        
+        # --- Nama Peserta ---
+        emp_name = self.employee_id.name or ''
+        c.setFillColor(colors.HexColor('#0F2C59'))
+        c.setFont("Times-Bold", 30)
+        c.drawCentredString(center_x, height - 92 * mm, emp_name)
+        
+        # Garis emas di bawah nama peserta
+        c.setStrokeColor(colors.HexColor('#C5A059'))
+        c.setLineWidth(1)
+        c.line(center_x - 45 * mm, height - 96 * mm, center_x + 45 * mm, height - 96 * mm)
+        
+        # --- Program Pelatihan ---
+        c.setFillColor(colors.HexColor('#444444'))
+        c.setFont("Helvetica", 13)
+        c.drawCentredString(center_x, height - 110 * mm, "Atas keberhasilan dan kelulusan dalam mengikuti program pelatihan:")
+        
+        # --- Nama Course ---
+        course_name = self.channel_id.name or ''
+        c.setFillColor(colors.HexColor('#1A365D'))
+        c.setFont("Times-Bold", 24)
+        c.drawCentredString(center_x, height - 124 * mm, f'"{course_name}"')
+        
+        # --- Nilai Akhir ---
+        score_str = f"{self.final_score:.2f}"
+        c.setFillColor(colors.HexColor('#444444'))
+        c.setFont("Helvetica", 13)
+        c.drawCentredString(center_x, height - 138 * mm, f"Dengan Nilai Akhir Berbobot: {score_str}")
+        
+        # --- Tanda Tangan ---
+        sig_y = 25 * mm
+        
+        # Kiri: Trainer
+        left_x = 75 * mm
+        c.setFillColor(colors.HexColor('#555555'))
+        c.setFont("Helvetica", 11)
+        c.drawCentredString(left_x, sig_y + 24 * mm, "Trainer / Instruktur,")
+        
+        trainer_name = (self.trainer_id and self.trainer_id.name) or (self.channel_id and self.channel_id.user_id and self.channel_id.user_id.name) or ''
+        c.setFillColor(colors.HexColor('#0F2C59'))
+        c.setFont("Helvetica-Bold", 12)
+        c.drawCentredString(left_x, sig_y, trainer_name)
+        if trainer_name:
+            t_width = c.stringWidth(trainer_name, "Helvetica-Bold", 12)
+            c.setStrokeColor(colors.HexColor('#0F2C59'))
+            c.setLineWidth(0.8)
+            c.line(left_x - t_width/2.0, sig_y - 2, left_x + t_width/2.0, sig_y - 2)
+        
+        # Kanan: HR Head
+        right_x = width - 75 * mm
+        date_val = self.completion_date or datetime.date.today()
+        date_str = date_val.strftime('%d %B %Y') if hasattr(date_val, 'strftime') else str(date_val)
+        
+        c.setFillColor(colors.HexColor('#555555'))
+        c.setFont("Helvetica", 11)
+        c.drawCentredString(right_x, sig_y + 30 * mm, f"Jakarta, {date_str}")
+        c.drawCentredString(right_x, sig_y + 24 * mm, "Head of HR L&D,")
+        
+        hr_name = "Ahmad Fauzi"
+        c.setFillColor(colors.HexColor('#0F2C59'))
+        c.setFont("Helvetica-Bold", 12)
+        c.drawCentredString(right_x, sig_y, hr_name)
+        h_width = c.stringWidth(hr_name, "Helvetica-Bold", 12)
+        c.setStrokeColor(colors.HexColor('#0F2C59'))
+        c.setLineWidth(0.8)
+        c.line(right_x - h_width/2.0, sig_y - 2, right_x + h_width/2.0, sig_y - 2)
+        
+        c.showPage()
+        c.save()
+        
+        pdf_data = buffer.getvalue()
+        buffer.close()
+        return pdf_data
+
     #  4: PENERBITAN SERTIFIKAT AUTOMATIS PDF & EMAIL
     def action_generate_certificate(self):
-        """Method untuk meng-generate nomor sertifikat, PDF, dan mengirim email otomatis."""
+        """Method untuk meng-generate nomor sertifikat, PDF via ReportLab, dan mengirim email otomatis."""
         for rec in self:
             if rec.state != 'passed':
                 raise UserError(_("Sertifikat hanya dapat diterbitkan untuk peserta dengan status LULUS!"))
 
-            # 1. Generate nomor sertifikat unik jika belum ada
+            # 1. Hapus attachment lama jika ada
+            old_attachments = self.env['ir.attachment'].search([
+                ('res_model', '=', 'hcdi.training.history'),
+                ('res_id', '=', rec.id)
+            ])
+            if old_attachments:
+                old_attachments.sudo().unlink()
+
+            # 2. Generate nomor sertifikat unik jika belum ada
             if not rec.certificate_number:
                 rec.certificate_number = self.env['ir.sequence'].next_by_code('hcdi.training.certificate') or _('New')
 
-            # 2. Render QWeb PDF Report (Menggunakan res_type agar tidak menimpa fungsi translation '_')
-            report_action = self.env.ref('hcdi_training.action_report_hcdi_certificate')
-            pdf_content, res_type = report_action._render_qweb_pdf('hcdi_training.action_report_hcdi_certificate', [rec.id])
+            # 3. Render PDF Sertifikat dengan ReportLab (100% presisi A4 Landscape full page)
+            pdf_content = rec._generate_reportlab_certificate_pdf()
             
             filename = f"Sertifikat_{rec.certificate_number.replace('/', '_')}_{rec.employee_id.name}.pdf"
             rec.write({
@@ -278,7 +415,7 @@ class HcdiTrainingHistory(models.Model):
                 'certificate_filename': filename,
             })
 
-            # 3. Kirim Email Otomatis dengan Attachment PDF
+            # 4. Kirim Email Otomatis dengan Attachment PDF
             template = self.env.ref('hcdi_training.email_template_hcdi_certificate', raise_if_not_found=False)
             if template:
                 attachment = self.env['ir.attachment'].create({

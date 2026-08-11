@@ -16,10 +16,6 @@
                        decoration-info="execution_state == 'draft'"
                        decoration-warning="execution_state == 'in_progress'"
                        decoration-success="execution_state == 'done'"/>
-                <field name="state" widget="badge"
-                       decoration-success="state == 'passed'"
-                       decoration-danger="state == 'failed'"
-                       decoration-info="state == 'draft'"/>
             </list>
         </field>
     </record>
@@ -64,7 +60,7 @@
 
                     <button name="action_complete_training"
                             type="object"
-                            string="Selesaikan Training (Done)"
+                            string="Done"
                             class="btn-success"
                             invisible="execution_state != 'in_progress'"/>
 
@@ -123,7 +119,7 @@
         <field name="res_model">hcdi.training.history</field>
         <field name="view_mode">list,form</field>
         <field name="view_id" ref="view_hcdi_training_progress_tree"/>
-        <field name="domain">[('execution_state', 'in', ['draft', 'in_progress', 'done'])]</field>
+        <field name="domain">[('execution_state', 'in', ['draft', 'in_progress'])]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Belum ada data progres training. Peserta otomatis ditarik dari Pengajuan Training yang telah disetujui.
