@@ -28,12 +28,25 @@
         <field name="arch" type="xml">
             <form string="Pengajuan Training / TNA">
                 <header>
+                    <field name="show_approve" invisible="1"/>
                     <button name="action_submit_for_approval"
                             type="object"
                             string="Kirim Pengajuan"
                             class="btn-primary"
                             invisible="approval_state in ['waiting', 'approved', 'reject']"/>
-                    
+
+                    <button name="action_approve_request"
+                            type="object"
+                            string="Approve"
+                            class="btn-primary"
+                            invisible="not show_approve or approval_state != 'waiting'"/>
+
+                    <button name="action_reject_request"
+                            type="object"
+                            string="Reject"
+                            class="btn-secondary"
+                            invisible="not show_approve or approval_state != 'waiting'"/>
+
                     <button name="action_create_course"
                             type="object"
                             string="Buat Course eLearning"
@@ -83,6 +96,20 @@
                         </page>
                         <page string="Dokumen Pendukung / File Attachment" name="attachments_page">
                             <field name="attachment_ids" widget="many2many_binary" string="Upload Dokumen / Bukti Email"/>
+                        </page>
+                        <page string="Tahapan &amp; Status Approval" name="approval_steps_page" invisible="not approval_id">
+                            <field name="approval_step_ids" readonly="1">
+                                <list string="Tahapan Approval">
+                                    <field name="steps" string="Langkah Ke-"/>
+                                    <field name="approver_id" string="Approver"/>
+                                    <field name="role" string="Peran / Jabatan"/>
+                                    <field name="current_state" widget="badge"
+                                           decoration-success="current_state == 'approved'"
+                                           decoration-danger="current_state == 'reject'"
+                                           decoration-warning="current_state == 'pending'"/>
+                                    <field name="note" string="Catatan Persetujuan"/>
+                                </list>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>

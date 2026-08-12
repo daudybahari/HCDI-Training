@@ -12,7 +12,6 @@ Fitur Utama:
 - Perhitungan Nilai Akhir Berbobot (Pre-test, Quiz, Post-test)
 - Penerbitan Sertifikat Otomatis dengan Sequence Unik & Auto-Email
 - Tab Training History pada Profil Karyawan (hr.employee)
-- Dashboard Monitoring Kompetensi Real-Time
     """,
     'author': 'Technical Developer - HCDI',
     'website': 'https://www.hcdindonesia.com',
@@ -35,15 +34,7 @@ Fitur Utama:
         'views/slide_channel_views.xml',
         'views/training_history_views.xml',
         'views/hr_employee_views.xml',
-        'views/dashboard_views.xml',
     ],
-    'assets': {
-        'web.assets_backend': [
-            'hcdi_training/static/src/components/competency_dashboard/competency_dashboard.js',
-            'hcdi_training/static/src/components/competency_dashboard/competency_dashboard.xml',
-            'hcdi_training/static/src/components/competency_dashboard/competency_dashboard.scss',
-        ],
-    },
     'installable': True,
     'application': True,
     'auto_install': False,

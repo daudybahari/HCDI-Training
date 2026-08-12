@@ -86,6 +86,41 @@ class HcdiTrainingRequest(models.Model):
         copy=False
     )
 
+    # Proxy Fields & Actions untuk Integrasi Full Workflow Approval Cybrosys di HCDI Form
+    show_approve = fields.Boolean(
+        string='Bisa Approve/Reject',
+        compute='_compute_show_approve'
+    )
+    approval_step_ids = fields.One2many(
+        related='approval_id.step_ids',
+        string='Tahapan Approval Cybrosys',
+        readonly=True
+    )
+
+    @api.depends('approval_id', 'approval_id.show_approve', 'approval_id.state')
+    def _compute_show_approve(self):
+        """Mengecek apakah user yang sedang login adalah approver / team lead sah untuk dokumen approval Cybrosys ini."""
+        for rec in self:
+            if rec.approval_id and rec.approval_state == 'waiting':
+                rec.approval_id._compute_show_approve()
+                rec.show_approve = rec.approval_id.show_approve
+            else:
+                rec.show_approve = False
+
+    def action_approve_request(self):
+        """Memanggil wizard Setujui (Approve) bawaan Cybrosys document.approval."""
+        self.ensure_one()
+        if not self.approval_id:
+            raise UserError(_("Dokumen approval belum dibuat!"))
+        return self.approval_id.action_approve()
+
+    def action_reject_request(self):
+        """Memanggil wizard Tolak (Reject) bawaan Cybrosys document.approval."""
+        self.ensure_one()
+        if not self.approval_id:
+            raise UserError(_("Dokumen approval belum dibuat!"))
+        return self.approval_id.action_reject()
+
     def action_submit_for_approval(self):
         """Membuat record Document Approval Cybrosys dan mengirimkan pengajuan ke workflow approval."""
         for rec in self:
