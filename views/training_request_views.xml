@@ -5,7 +5,7 @@
         <field name="name">hcdi.training.request.list</field>
         <field name="model">hcdi.training.request</field>
         <field name="arch" type="xml">
-            <list string="Pengajuan Training (Approval)">
+            <list string="Training Request (Approval)">
                 <field name="name"/>
                 <field name="manager_id"/>
                 <field name="department_id"/>
@@ -26,12 +26,12 @@
         <field name="name">hcdi.training.request.form</field>
         <field name="model">hcdi.training.request</field>
         <field name="arch" type="xml">
-            <form string="Pengajuan Training / TNA">
+            <form string="Training Request (Approval)">
                 <header>
                     <field name="show_approve" invisible="1"/>
                     <button name="action_submit_for_approval"
                             type="object"
-                            string="Kirim Pengajuan"
+                            string="Send Approval"
                             class="btn-primary"
                             invisible="approval_state in ['waiting', 'approved', 'reject']"/>
 
@@ -49,26 +49,26 @@
 
                     <button name="action_create_course"
                             type="object"
-                            string="Buat Course eLearning"
-                            class="btn-success"
+                            string="Create eLearning Course"
+                            class="btn-primary"
                             invisible="approval_state != 'approved' or course_id"/>
                     
                     <field name="approval_state" widget="statusbar" statusbar_visible="draft,waiting,approved,reject"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <label for="name" string="Judul Pengajuan Training"/>
+                        <label for="name" string="Training Request Title"/>
                         <h1>
-                            <field name="name" placeholder="Contoh: Pengajuan Training Data Analytics..."/>
+                            <field name="name" placeholder="e.g. Data Analytics &amp; Python Training Request"/>
                         </h1>
                     </div>
                     <group>
-                        <group string="1. Informasi Pengajuan">
+                        <group string="1. Approval Information">
                             <field name="manager_id"/>
                             <field name="department_id"/>
                             <field name="estimated_date"/>
                         </group>
-                        <group string="2. Workflow Approval HR L&amp;D">
+                        <group string="2. HR L&amp;D Approval Workflow">
                             <field name="approval_team_id" required="1"/>
                             <field name="approval_id" readonly="1"/>
                             <field name="course_id" readonly="1"/>
@@ -76,17 +76,17 @@
                     </group>
 
                     <!-- Section Khusus Penetapan HR L&D setelah Approved -->
-                    <group string="3. Penetapan Trainer Pelatihan" invisible="approval_state != 'approved'">
-                        <field name="trainer_id" placeholder="Pilih Trainer / Instruktur..."/>
+                    <group string="3. Trainer Assignment" invisible="approval_state != 'approved'">
+                        <field name="trainer_id" placeholder="Select Trainer / Instructor..."/>
                     </group>
 
                     <notebook>
-                        <page string="Alasan &amp; Kebutuhan (TNA)" name="reason_page">
-                            <field name="reason" placeholder="Jelaskan kebutuhan pelatihan ini..."/>
+                        <page string="Training Needs &amp; Rationale (TNA)" name="reason_page">
+                            <field name="reason" placeholder="Describe the training needs or rationale..."/>
                         </page>
-                        <page string="Calon Peserta Training" name="participants_page">
+                        <page string="Training Participants" name="participants_page">
                             <field name="target_participant_ids">
-                                <list string="Daftar Calon Peserta">
+                                <list string="Participants List">
                                     <field name="name"/>
                                     <field name="department_id"/>
                                     <field name="job_id"/>
@@ -94,20 +94,20 @@
                                 </list>
                             </field>
                         </page>
-                        <page string="Dokumen Pendukung / File Attachment" name="attachments_page">
-                            <field name="attachment_ids" widget="many2many_binary" string="Upload Dokumen / Bukti Email"/>
+                        <page string="File Attachment" name="attachments_page">
+                            <field name="attachment_ids" widget="many2many_binary" string="Upload Document / Proof Files"/>
                         </page>
-                        <page string="Tahapan &amp; Status Approval" name="approval_steps_page" invisible="not approval_id">
+                        <page string="Approval Steps &amp; Status" name="approval_steps_page" invisible="not approval_id">
                             <field name="approval_step_ids" readonly="1">
-                                <list string="Tahapan Approval">
-                                    <field name="steps" string="Langkah Ke-"/>
+                                <list string="Approval Steps">
+                                    <field name="steps" string="Step #"/>
                                     <field name="approver_id" string="Approver"/>
-                                    <field name="role" string="Peran / Jabatan"/>
+                                    <field name="role" string="Role / Position"/>
                                     <field name="current_state" widget="badge"
                                            decoration-success="current_state == 'approved'"
                                            decoration-danger="current_state == 'reject'"
                                            decoration-warning="current_state == 'pending'"/>
-                                    <field name="note" string="Catatan Persetujuan"/>
+                                    <field name="note" string="Approval Note"/>
                                 </list>
                             </field>
                         </page>
@@ -120,20 +120,20 @@
 
     <!-- Action Window for Training Request -->
     <record id="action_hcdi_training_request" model="ir.actions.act_window">
-        <field name="name">Pengajuan Training (Approval)</field>
+        <field name="name">TNA Request</field>
         <field name="res_model">hcdi.training.request</field>
         <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Belum ada pengajuan training. Klik 'New' untuk membuat pengajuan baru.
+                No training requests found. Click 'New' to create a new request.
             </p>
         </field>
     </record>
 
     <!-- Menuitem for Training Request -->
     <menuitem id="menu_hcdi_training_request_list"
-              name="Pengajuan Training (TNA)"
-              parent="menu_hcdi_training_operations"
+              name="TNA Request"
+              parent="menu_hcdi_training_root"
               action="action_hcdi_training_request"
               sequence="10"/>
 </odoo>

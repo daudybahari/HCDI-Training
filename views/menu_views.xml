@@ -6,14 +6,8 @@
               web_icon="hcdi_training,static/description/icon.png"
               sequence="10"/>
 
-    <!-- Sub-menu Configuration / operations -->
-    <menuitem id="menu_hcdi_training_operations"
-              name="Operasional Training"
-              parent="menu_hcdi_training_root"
-              sequence="10"/>
-
     <menuitem id="menu_hcdi_training_reporting"
-              name="Laporan &amp; Monitoring"
+              name="Reporting"
               parent="menu_hcdi_training_root"
               sequence="20"/>
 </odoo>

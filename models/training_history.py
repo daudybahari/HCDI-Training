@@ -18,7 +18,7 @@ class HcdiTrainingHistory(models.Model):
 
     employee_id = fields.Many2one(
         'hr.employee',
-        string='Karyawan',
+        string='Employee',
         required=True,
         ondelete='cascade',
         index=True,
@@ -26,21 +26,21 @@ class HcdiTrainingHistory(models.Model):
     )
     department_id = fields.Many2one(
         'hr.department',
-        string='Divisi / Departemen',
+        string='Department',
         related='employee_id.department_id',
         store=True,
         readonly=True
     )
     job_id = fields.Many2one(
         'hr.job',
-        string='Jabatan',
+        string='Job Position',
         related='employee_id.job_id',
         store=True,
         readonly=True
     )
     channel_id = fields.Many2one(
         'slide.channel',
-        string='Course / Training',
+        string='Course',
         required=True,
         ondelete='restrict',
         tracking=True
@@ -52,11 +52,11 @@ class HcdiTrainingHistory(models.Model):
         readonly=True
     )
     start_date = fields.Date(
-        string='Tanggal Mulai',
+        string='Start Date',
         default=fields.Date.context_today
     )
     completion_date = fields.Date(
-        string='Tanggal Selesai',
+        string='End Date',
         tracking=True
     )
     score_pretest = fields.Float(
@@ -64,24 +64,24 @@ class HcdiTrainingHistory(models.Model):
         default=0.0,
         readonly=True,
         tracking=True,
-        help='Nilai otomatis ditarik dari hasil Ujian Pre-test di modul Survey Odoo'
+        help='Score automatically pulled from Pre-test Survey'
     )
     score_quiz = fields.Float(
         string='Quiz',
         default=0.0,
         readonly=True,
         tracking=True,
-        help='Nilai rata-rata otomatis ditarik dari pengerjaan Kuis di modul Survey Odoo'
+        help='Average score automatically pulled from Quizzes'
     )
     score_posttest = fields.Float(
         string='Post-test',
         default=0.0,
         readonly=True,
         tracking=True,
-        help='Nilai otomatis ditarik dari Ujian Akhir (Post-test) di modul Survey Odoo'
+        help='Score automatically pulled from Post-test Survey'
     )
     final_score = fields.Float(
-        string='Nilai Akhir Berbobot',
+        string='Weighted Final Score',
         compute='_compute_final_score',
         store=True,
         tracking=True
@@ -92,30 +92,30 @@ class HcdiTrainingHistory(models.Model):
         readonly=True
     )
     execution_state = fields.Selection([
-        ('draft', 'Draft'),
+        ('draft', 'Not Started'),
         ('in_progress', 'In Progress'),
-        ('done', 'Selesai Pelaksanaan')
-    ], string='Status Pelaksanaan', default='draft', required=True, tracking=True)
+        ('done', 'Done')
+    ], string='Status', default='draft', required=True, tracking=True)
 
     state = fields.Selection([
-        ('draft', 'Mengikuti'),
-        ('passed', 'Lulus'),
-        ('failed', 'Tidak Lulus')
-    ], string='Status Kelulusan', compute='_compute_state', store=True, default='draft', tracking=True)
+        ('draft', 'Enrolled'),
+        ('passed', 'Passed'),
+        ('failed', 'Failed')
+    ], string='Training Result', compute='_compute_state', store=True, default='draft', tracking=True)
 
     certificate_number = fields.Char(
-        string='Nomor Sertifikat',
+        string='Certificate Number',
         readonly=True,
         copy=False,
         tracking=True
     )
     certificate_file = fields.Binary(
-        string='File Sertifikat (PDF)',
+        string='Certificate File (PDF)',
         attachment=True,
         readonly=True
     )
     certificate_filename = fields.Char(
-        string='Nama File Sertifikat'
+        string='Certificate Filename'
     )
 
     # 1: PERHITUNGAN NILAI AKHIR BERBOBOT
@@ -334,13 +334,8 @@ class HcdiTrainingHistory(models.Model):
         course_name = self.channel_id.name or ''
         c.setFillColor(colors.HexColor('#1A365D'))
         c.setFont("Times-Bold", 24)
-        c.drawCentredString(center_x, height - 124 * mm, f'"{course_name}"')
+        c.drawCentredString(center_x, height - 124 * mm, f'{course_name}')
         
-        # --- Nilai Akhir ---
-        score_str = f"{self.final_score:.2f}"
-        c.setFillColor(colors.HexColor('#444444'))
-        c.setFont("Helvetica", 13)
-        c.drawCentredString(center_x, height - 138 * mm, f"Dengan Nilai Akhir Berbobot: {score_str}")
         
         # --- Tanda Tangan ---
         sig_y = 25 * mm
@@ -368,7 +363,7 @@ class HcdiTrainingHistory(models.Model):
         
         c.setFillColor(colors.HexColor('#555555'))
         c.setFont("Helvetica", 11)
-        c.drawCentredString(right_x, sig_y + 30 * mm, f"Jakarta, {date_str}")
+        c.drawCentredString(right_x, sig_y + 30 * mm, f"Malang, {date_str}")
         c.drawCentredString(right_x, sig_y + 24 * mm, "Head of HR L&D,")
         
         hr_name = "Ahmad Fauzi"

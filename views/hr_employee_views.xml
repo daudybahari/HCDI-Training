@@ -16,16 +16,16 @@
                         <span class="o_stat_value">
                             <field name="passed_training_count"/> / <field name="training_count"/>
                         </span>
-                        <span class="o_stat_text">Training Lulus</span>
+                        <span class="o_stat_text">Passed Training</span>
                     </div>
                 </button>
             </div>
 
-            <!-- Add Tab "Training & Kompetensi" inside Notebook -->
+            <!-- Add Tab "Training Result & History" inside Notebook -->
             <xpath expr="//notebook" position="inside">
-                <page string="Riwayat Training &amp; Kompetensi" name="hcdi_training_tab">
+                <page string="Training Result &amp; History" name="hcdi_training_tab">
                     <field name="training_history_ids">
-                        <list string="Riwayat Training" create="true" delete="true">
+                        <list string="Training History" create="true" delete="true">
                             <field name="channel_id"/>
                             <field name="completion_date"/>
                             <field name="score_pretest"/>

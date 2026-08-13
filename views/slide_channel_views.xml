@@ -7,14 +7,14 @@
         <field name="inherit_id" ref="website_slides.view_slide_channel_form"/>
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
-                <page string="Konfigurasi Penilaian &amp; Bobot" name="hcdi_scoring_weights">
+                <page string="Scoring Weights &amp; Evaluation" name="hcdi_scoring_weights">
                     <group>
-                        <group string="Persentase Bobot Penilaian (Total harus 100%)">
+                        <group string="Assessment Weights Percentage (Total must equal 100%)">
                             <field name="weight_pretest"/>
                             <field name="weight_quiz"/>
                             <field name="weight_posttest"/>
                         </group>
-                        <group string="Standar Kelulusan">
+                        <group string="Passing Grade Standard">
                             <field name="passing_grade"/>
                         </group>
                     </group>
@@ -25,20 +25,20 @@
 
     <!-- Action Window for Management Training / Course -->
     <record id="action_hcdi_slide_channel" model="ir.actions.act_window">
-        <field name="name">Manajemen Pelatihan (Course)</field>
+        <field name="name">Course</field>
         <field name="res_model">slide.channel</field>
         <field name="view_mode">kanban,list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Belum ada pelatihan (course) yang dibuat. Course dapat dibuat dari Pengajuan Training (TNA) yang sudah Approved.
+                No courses created yet. Courses are created automatically from Approved TNA Requests.
             </p>
         </field>
     </record>
 
-    <!-- Menuitem for Course Management under Operasional Training -->
+    <!-- Menuitem for Course Management -->
     <menuitem id="menu_hcdi_slide_channel_list"
-              name="Manajemen Pelatihan (Course)"
-              parent="menu_hcdi_training_operations"
+              name="Course"
+              parent="menu_hcdi_training_root"
               action="action_hcdi_slide_channel"
               sequence="15"/>
 </odoo>
