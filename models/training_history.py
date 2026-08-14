@@ -449,6 +449,118 @@ class HcdiTrainingHistory(models.Model):
         return res
 
 
+    # ─────────────────────────────────────────────────────────
+    #  DASHBOARD DATA METHODS
+    # ─────────────────────────────────────────────────────────
+
+    @api.model
+    def get_dashboard_data(self, filters=None):
+        """Return all data needed by the Training Management Dashboard."""
+        if filters is None:
+            filters = {}
+
+        domain = []
+        department_id = filters.get('department_id')
+        employee_id   = filters.get('employee_id')
+        channel_id    = filters.get('channel_id')
+        year          = filters.get('year')
+        page          = int(filters.get('page', 1))
+        page_size     = int(filters.get('page_size', 5))
+
+        if department_id:
+            domain.append(('department_id', '=', int(department_id)))
+        if employee_id:
+            domain.append(('employee_id', '=', int(employee_id)))
+        if channel_id:
+            domain.append(('channel_id', '=', int(channel_id)))
+        if year:
+            domain.extend([
+                ('start_date', '>=', '%s-01-01' % year),
+                ('start_date', '<=', '%s-12-31' % year),
+            ])
+
+        records = self.search(domain)
+        total_participants = len(records)
+        total_training = len(records.mapped('channel_id'))
+
+        done_records        = records.filtered(lambda r: r.execution_state == 'done')
+        in_progress_records = records.filtered(lambda r: r.execution_state == 'in_progress')
+        not_started_records = records.filtered(lambda r: r.execution_state == 'draft')
+
+        completion_rate = round((len(done_records) / total_participants * 100)
+                                if total_participants else 0)
+
+        passed_records = records.filtered(lambda r: r.state == 'passed')
+        failed_records = records.filtered(lambda r: r.state == 'failed')
+
+        pass_rate = round((len(passed_records) / len(done_records) * 100)
+                          if done_records else 0)
+
+        # Paginate employee table
+        offset           = (page - 1) * page_size
+        paginated        = records[offset: offset + page_size]
+        employees_data   = []
+        for rec in paginated:
+            if rec.execution_state == 'done':
+                display_state = rec.state          # 'passed' / 'failed'
+            elif rec.execution_state == 'in_progress':
+                display_state = 'in_progress'
+            else:
+                display_state = 'not_started'
+
+            employees_data.append({
+                'employee': rec.employee_id.name or '',
+                'course':   rec.channel_id.name   or '',
+                'score':    rec.final_score,
+                'state':    display_state,
+            })
+
+        return {
+            'kpi': {
+                'total_training':    total_training,
+                'total_participants': total_participants,
+                'completion_rate':   completion_rate,
+                'pass_rate':         pass_rate,
+            },
+            'completion': {
+                'completed':   len(done_records),
+                'in_progress': len(in_progress_records) + len(not_started_records),
+            },
+            'result': {
+                'passed': len(passed_records),
+                'failed': len(failed_records),
+            },
+            'employees':       employees_data,
+            'total_employees': total_participants,
+        }
+
+    @api.model
+    def get_filter_options(self):
+        """Return dropdown options for the dashboard filter bar."""
+        departments = self.env['hr.department'].search_read(
+            [], ['id', 'name'], order='name asc'
+        )
+        employees = self.env['hr.employee'].search_read(
+            [('active', '=', True)], ['id', 'name', 'department_id'], order='name asc'
+        )
+        courses = self.env['slide.channel'].search_read(
+            [], ['id', 'name'], order='name asc'
+        )
+
+        all_records  = self.search([('start_date', '!=', False)])
+        years_set    = set(r.start_date.year for r in all_records)
+        current_year = datetime.date.today().year
+        years_set.add(current_year)
+        years = sorted(years_set, reverse=True)
+
+        return {
+            'departments': departments,
+            'employees':   employees,
+            'courses':     courses,
+            'years':       years,
+        }
+
+
 class SurveyUserInput(models.Model):
     _inherit = 'survey.user_input'
 
@@ -482,3 +594,4 @@ class SurveyUserInput(models.Model):
                                 history.execution_state = 'done'
                                 history.action_sync_survey_scores()
         return res
+

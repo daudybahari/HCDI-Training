@@ -55,7 +55,7 @@
                     
                     <field name="approval_state" widget="statusbar" statusbar_visible="draft,waiting,approved,reject"/>
                 </header>
-                <sheet>
+                 <sheet>
                     <div class="oe_title">
                         <label for="name" string="Training Request Title"/>
                         <h1>

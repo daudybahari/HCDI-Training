@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="hcdi_training.TrainingDashboard">
+    <div class="hcdi-dashboard">
+
+        <!-- ── Loading Overlay ── -->
+        <div t-attf-class="hcdi-loading-overlay {{state.loading ? 'active' : ''}}">
+            <div class="hcdi-spinner"/>
+        </div>
+
+
+        <!-- ── Filter Bar ── -->
+        <div class="hcdi-filter-bar">
+            <!-- Department -->
+            <div class="hcdi-filter-group">
+                <label class="hcdi-filter-label">Department</label>
+                <select class="hcdi-filter-select"
+                        data-field="department_id"
+                        t-on-change="onFilterChange">
+                    <option value="">All</option>
+                    <t t-foreach="state.filterOptions.departments" t-as="dept" t-key="dept.id">
+                        <option t-att-value="dept.id"
+                                t-att-selected="state.filters.department_id === dept.id">
+                            <t t-esc="dept.name"/>
+                        </option>
+                    </t>
+                </select>
+            </div>
+
+            <!-- Employee -->
+            <div class="hcdi-filter-group">
+                <label class="hcdi-filter-label">Employee</label>
+                <select class="hcdi-filter-select"
+                        data-field="employee_id"
+                        t-on-change="onFilterChange">
+                    <option value="">All</option>
+                    <t t-foreach="state.filterOptions.employees" t-as="emp" t-key="emp.id">
+                        <option t-att-value="emp.id"
+                                t-att-selected="state.filters.employee_id === emp.id">
+                            <t t-esc="emp.name"/>
+                        </option>
+                    </t>
+                </select>
+            </div>
+
+            <!-- Course -->
+            <div class="hcdi-filter-group">
+                <label class="hcdi-filter-label">Course</label>
+                <select class="hcdi-filter-select"
+                        data-field="channel_id"
+                        t-on-change="onFilterChange">
+                    <option value="">All</option>
+                    <t t-foreach="state.filterOptions.courses" t-as="course" t-key="course.id">
+                        <option t-att-value="course.id"
+                                t-att-selected="state.filters.channel_id === course.id">
+                            <t t-esc="course.name"/>
+                        </option>
+                    </t>
+                </select>
+            </div>
+
+            <!-- Year -->
+            <div class="hcdi-filter-group">
+                <label class="hcdi-filter-label">Year</label>
+                <select class="hcdi-filter-select hcdi-filter-year"
+                        t-on-change="onYearChange">
+                    <option value="">All</option>
+                    <t t-foreach="state.filterOptions.years" t-as="yr" t-key="yr">
+                        <option t-att-value="yr"
+                                t-att-selected="state.filters.year === yr">
+                            <t t-esc="yr"/>
+                        </option>
+                    </t>
+                </select>
+            </div>
+
+            <!-- Reset -->
+            <button class="hcdi-btn-reset" t-on-click="onResetFilter">
+                <i class="fa fa-refresh me-1"/> Reset Filter
+            </button>
+        </div>
+
+        <!-- ── KPI Cards ── -->
+        <div class="hcdi-kpi-row">
+            <!-- Total Training -->
+            <div class="hcdi-kpi-card">
+                <div class="hcdi-kpi-icon" style="background:#dbeafe;">
+                    <i class="fa fa-graduation-cap" style="color:#2563eb;"/>
+                </div>
+                <div class="hcdi-kpi-body">
+                    <div class="hcdi-kpi-label">Total Course</div>
+                    <div class="hcdi-kpi-value" t-esc="state.data.kpi.total_training"/>
+                </div>
+            </div>
+
+            <!-- Total Participants -->
+            <div class="hcdi-kpi-card">
+                <div class="hcdi-kpi-icon" style="background:#dcfce7;">
+                    <i class="fa fa-users" style="color:#16a34a;"/>
+                </div>
+                <div class="hcdi-kpi-body">
+                    <div class="hcdi-kpi-label">Total Participants</div>
+                    <div class="hcdi-kpi-value" t-esc="state.data.kpi.total_participants"/>
+                </div>
+            </div>
+
+            <!-- Completion Rate -->
+            <div class="hcdi-kpi-card">
+                <div class="hcdi-kpi-icon" style="background:#ffedd5;">
+                    <i class="fa fa-check-circle" style="color:#ea580c;"/>
+                </div>
+                <div class="hcdi-kpi-body">
+                    <div class="hcdi-kpi-label">Completion Rate</div>
+                    <div class="hcdi-kpi-value">
+                        <t t-esc="state.data.kpi.completion_rate"/>%
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pass Rate -->
+            <div class="hcdi-kpi-card">
+                <div class="hcdi-kpi-icon" style="background:#f3e8ff;">
+                    <i class="fa fa-trophy" style="color:#9333ea;"/>
+                </div>
+                <div class="hcdi-kpi-body">
+                    <div class="hcdi-kpi-label">Pass Rate</div>
+                    <div class="hcdi-kpi-value">
+                        <t t-esc="state.data.kpi.pass_rate"/>%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Charts Row ── -->
+        <div class="hcdi-charts-row">
+
+            <!-- Training Completion Donut -->
+            <div class="hcdi-chart-card">
+                <div class="hcdi-chart-title">TRAINING COMPLETION</div>
+                <div class="hcdi-chart-body">
+                    <div class="hcdi-donut-wrap">
+                        <canvas t-ref="completionChart" class="hcdi-donut-canvas"/>
+                    </div>
+                    <div class="hcdi-chart-legend">
+                        <div class="hcdi-legend-item">
+                            <span class="hcdi-dot" style="background:#4f9ef8;"/>
+                            <div>
+                                <div class="hcdi-legend-label">Completed</div>
+                                <div class="hcdi-legend-count">
+                                    <t t-esc="completionPct(state.data.completion.completed)"/>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="hcdi-legend-item">
+                            <span class="hcdi-dot" style="background:#e2e8f0;"/>
+                            <div>
+                                <div class="hcdi-legend-label">In Progress</div>
+                                <div class="hcdi-legend-count">
+                                    <t t-esc="completionPct(state.data.completion.in_progress)"/>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Training Result Donut -->
+            <div class="hcdi-chart-card">
+                <div class="hcdi-chart-title">TRAINING RESULT</div>
+                <div class="hcdi-chart-body">
+                    <div class="hcdi-donut-wrap">
+                        <canvas t-ref="resultChart" class="hcdi-donut-canvas"/>
+                    </div>
+                    <div class="hcdi-chart-legend">
+                        <div class="hcdi-legend-item">
+                            <span class="hcdi-dot" style="background:#22c55e;"/>
+                            <div>
+                                <div class="hcdi-legend-label">Passed</div>
+                                <div class="hcdi-legend-count" t-esc="state.data.result.passed"/>
+
+                            </div>
+                        </div>
+                        <div class="hcdi-legend-item">
+                            <span class="hcdi-dot" style="background:#ef4444;"/>
+                            <div>
+                                <div class="hcdi-legend-label">Failed</div>
+                                <div class="hcdi-legend-count" t-esc="state.data.result.failed"/>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Employee Training Status Table ── -->
+        <div class="hcdi-table-card">
+            <div class="hcdi-table-title">EMPLOYEE TRAINING STATUS</div>
+            <table class="hcdi-table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Course</th>
+                        <th>Score</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-if="state.data.employees.length === 0">
+                        <tr>
+                            <td colspan="4" class="hcdi-table-empty">
+                                No training data found.
+                            </td>
+                        </tr>
+                    </t>
+                    <t t-foreach="state.data.employees" t-as="emp" t-key="emp_index">
+                        <tr>
+                            <td>
+                                <div class="hcdi-employee-cell">
+                                    <div class="hcdi-avatar"
+                                         t-att-style="'background:' + getAvatarColor(emp.employee)">
+                                        <t t-esc="getInitial(emp.employee)"/>
+                                    </div>
+                                    <span t-esc="emp.employee"/>
+                                </div>
+                            </td>
+                            <td t-esc="emp.course"/>
+                            <td t-esc="emp.score"/>
+                            <td>
+                                <span t-att-class="getStatusClass(emp.state)">
+                                    <t t-esc="getStatusLabel(emp.state)"/>
+                                </span>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="hcdi-pagination">
+                <div class="hcdi-pagination-info">
+                    Showing <t t-esc="showingFrom"/> to <t t-esc="showingTo"/> of
+                    <t t-esc="state.data.total_employees"/> entries
+                </div>
+                <div class="hcdi-pagination-controls">
+                    <button class="hcdi-page-btn"
+                            t-att-disabled="state.currentPage === 1"
+                            t-on-click="() => this.onPageChange(state.currentPage - 1)">
+                        &#8249;
+                    </button>
+                    <t t-foreach="pageNumbers" t-as="pg" t-key="pg">
+                        <button t-att-class="'hcdi-page-btn' + (state.currentPage === pg ? ' active' : '')"
+                                t-on-click="() => this.onPageChange(pg)">
+                            <t t-esc="pg"/>
+                        </button>
+                    </t>
+                    <button class="hcdi-page-btn"
+                            t-att-disabled="state.currentPage === totalPages"
+                            t-on-click="() => this.onPageChange(state.currentPage + 1)">
+                        &#8250;
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</t>
+
+</templates>

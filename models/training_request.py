@@ -210,3 +210,4 @@ class HcdiTrainingRequest(models.Model):
                 'res_id': new_course.id,
                 'view_mode': 'form',
             }
+

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Client Action: Training Dashboard OWL Component -->
+    <record id="action_hcdi_training_dashboard" model="ir.actions.client">
+        <field name="name">Training Management Dashboard</field>
+        <field name="tag">hcdi_training.dashboard</field>
+    </record>
+
+    <!-- Dashboard Menu — first in the navbar (sequence=5) -->
+    <menuitem id="menu_hcdi_training_dashboard"
+              name="Dashboard"
+              parent="menu_hcdi_training_root"
+              action="action_hcdi_training_dashboard"
+              sequence="5"/>
+
+</odoo>
