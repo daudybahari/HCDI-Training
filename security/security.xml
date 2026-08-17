@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Kategori Keamanan HCDI Training -->
+    <record id="module_category_hcdi_training" model="ir.module.category">
+        <field name="name">HCDI Training</field>
+        <field name="description">Kategori Keamanan untuk Aplikasi HCDI Training</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- Group: Trainer -->
+    <record id="group_hcdi_training_trainer" model="res.groups">
+        <field name="name">Trainer</field>
+        <field name="category_id" ref="module_category_hcdi_training"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- Group: Manager Divisi -->
+    <record id="group_hcdi_training_manager" model="res.groups">
+        <field name="name">Manager Divisi</field>
+        <field name="category_id" ref="module_category_hcdi_training"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- Group: HR Officer -->
+    <record id="group_hcdi_training_hr" model="res.groups">
+        <field name="name">HR Officer (Training)</field>
+        <field name="category_id" ref="module_category_hcdi_training"/>
+        <field name="implied_ids" eval="[(4, ref('hr.group_hr_user'))]"/>
+    </record>
+
+    <!-- RECORD RULES -->
+    <!-- 1. Rules for hcdi.training.history -->
+    
+    <!-- Rule Employee: Hanya bisa melihat datanya sendiri -->
+    <record id="rule_hcdi_training_history_employee" model="ir.rule">
+        <field name="name">Training History: Employee (Own Only)</field>
+        <field name="model_id" ref="model_hcdi_training_history"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Rule Trainer: Hanya melihat course asuhannya -->
+    <record id="rule_hcdi_training_history_trainer" model="ir.rule">
+        <field name="name">Training History: Trainer (Own Courses Only)</field>
+        <field name="model_id" ref="model_hcdi_training_history"/>
+        <field name="domain_force">[('trainer_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_hcdi_training_trainer'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Rule Manager: Hanya melihat divisi/departemennya -->
+    <record id="rule_hcdi_training_history_manager" model="ir.rule">
+        <field name="name">Training History: Manager (Department Only)</field>
+        <field name="model_id" ref="model_hcdi_training_history"/>
+        <field name="domain_force">['|', ('employee_id.department_id.manager_id.user_id', '=', user.id), ('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_hcdi_training_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Rule HR: Akses Semua -->
+    <record id="rule_hcdi_training_history_hr" model="ir.rule">
+        <field name="name">Training History: HR (All)</field>
+        <field name="model_id" ref="model_hcdi_training_history"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_hcdi_training_hr'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- 2. Rules for hcdi.training.request -->
+
+    <!-- Rule Manager: Hanya melihat pengajuan departemennya sendiri -->
+    <record id="rule_hcdi_training_request_manager" model="ir.rule">
+        <field name="name">TNA Request: Manager (Own &amp; Department Only)</field>
+        <field name="model_id" ref="model_hcdi_training_request"/>
+        <field name="domain_force">['|', ('manager_id', '=', user.id), ('department_id.manager_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_hcdi_training_manager'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Rule HR: Akses Semua Pengajuan -->
+    <record id="rule_hcdi_training_request_hr" model="ir.rule">
+        <field name="name">TNA Request: HR (All)</field>
+        <field name="model_id" ref="model_hcdi_training_request"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_hcdi_training_hr'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+</odoo>

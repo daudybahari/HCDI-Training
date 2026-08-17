@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <!-- Client Action: Training Dashboard OWL Component -->
@@ -12,6 +12,7 @@
               name="Dashboard"
               parent="menu_hcdi_training_root"
               action="action_hcdi_training_dashboard"
+              groups="hcdi_training.group_hcdi_training_hr,hcdi_training.group_hcdi_training_manager"
               sequence="5"/>
 
 </odoo>

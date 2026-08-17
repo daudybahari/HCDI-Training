@@ -65,8 +65,9 @@
 
                     <button name="action_generate_certificate"
                             type="object"
-                            string="Print &amp; Send Certificate"
+                            string="Send Certificate"
                             class="btn-info"
+                            groups="hcdi_training.group_hcdi_training_hr,hcdi_training.group_hcdi_training_trainer"
                             invisible="state != 'passed'"/>
                     
                     <field name="execution_state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>

@@ -135,5 +135,6 @@
               name="TNA Request"
               parent="menu_hcdi_training_root"
               action="action_hcdi_training_request"
+              groups="hcdi_training.group_hcdi_training_hr,hcdi_training.group_hcdi_training_manager"
               sequence="10"/>
 </odoo>

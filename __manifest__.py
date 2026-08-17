@@ -25,6 +25,7 @@ Fitur Utama:
         'document_approval', # SPR0-01: Cybrosys Document Approval Module
     ],
     'data': [
+        'security/security.xml',
         'security/ir.model.access.csv',
         'data/ir_sequence_data.xml',
         'data/mail_template_data.xml',

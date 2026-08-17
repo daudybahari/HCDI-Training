@@ -537,11 +537,31 @@ class HcdiTrainingHistory(models.Model):
     @api.model
     def get_filter_options(self):
         """Return dropdown options for the dashboard filter bar."""
+        user = self.env.user
+        is_hr = user.has_group('hcdi_training.group_hcdi_training_hr')
+        is_manager = user.has_group('hcdi_training.group_hcdi_training_manager')
+
+        dept_domain = []
+        emp_domain = [('active', '=', True)]
+
+        if is_manager and not is_hr:
+            # Filter to departments managed by this user's employee record
+            managed_depts = self.env['hr.department'].search([('manager_id.user_id', '=', user.id)])
+            if managed_depts:
+                dept_domain = [('id', 'in', managed_depts.ids)]
+                emp_domain.append(('department_id', 'in', managed_depts.ids))
+            else:
+                # Fallback to employee's own department if they don't manage any
+                employee = user.employee_id
+                if employee and employee.department_id:
+                    dept_domain = [('id', '=', employee.department_id.id)]
+                    emp_domain.append(('department_id', '=', employee.department_id.id))
+
         departments = self.env['hr.department'].search_read(
-            [], ['id', 'name'], order='name asc'
+            dept_domain, ['id', 'name'], order='name asc'
         )
         employees = self.env['hr.employee'].search_read(
-            [('active', '=', True)], ['id', 'name', 'department_id'], order='name asc'
+            emp_domain, ['id', 'name', 'department_id'], order='name asc'
         )
         courses = self.env['slide.channel'].search_read(
             [], ['id', 'name'], order='name asc'
