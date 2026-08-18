@@ -41,4 +41,11 @@
               parent="menu_hcdi_training_root"
               action="action_hcdi_slide_channel"
               sequence="15"/>
+
+    <!-- Inherit website_slides_survey.course_main to fix core Odoo AttributeError when first_slide is None -->
+    <template id="course_main_inherit_hcdi" inherit_id="website_slides_survey.course_main" name="Certification Course Main Inherit HCDI">
+        <xpath expr="//div[@id='home']//div[hasclass('alert-success')]" position="attributes">
+            <attribute name="t-if">channel.nbr_certification &gt; 0 and channel.is_member and channel.completion == 0 and first_slide</attribute>
+        </xpath>
+    </template>
 </odoo>

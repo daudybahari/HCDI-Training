@@ -14,6 +14,13 @@
         <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
     </record>
 
+    <!-- Group: Employee / Karyawan -->
+    <record id="group_hcdi_training_employee" model="res.groups">
+        <field name="name">Employee</field>
+        <field name="category_id" ref="module_category_hcdi_training"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
     <!-- Group: Manager Divisi -->
     <record id="group_hcdi_training_manager" model="res.groups">
         <field name="name">Manager Divisi</field>
@@ -36,7 +43,7 @@
         <field name="name">Training History: Employee (Own Only)</field>
         <field name="model_id" ref="model_hcdi_training_history"/>
         <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
-        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="groups" eval="[(6, 0, [ref('group_hcdi_training_employee')])]"/>
         <field name="perm_read" eval="True"/>
         <field name="perm_write" eval="True"/>
         <field name="perm_create" eval="True"/>
@@ -48,7 +55,7 @@
         <field name="name">Training History: Trainer (Own Courses Only)</field>
         <field name="model_id" ref="model_hcdi_training_history"/>
         <field name="domain_force">[('trainer_id', '=', user.id)]</field>
-        <field name="groups" eval="[(4, ref('group_hcdi_training_trainer'))]"/>
+        <field name="groups" eval="[(6, 0, [ref('group_hcdi_training_trainer')])]"/>
         <field name="perm_read" eval="True"/>
         <field name="perm_write" eval="True"/>
         <field name="perm_create" eval="True"/>
@@ -60,7 +67,7 @@
         <field name="name">Training History: Manager (Department Only)</field>
         <field name="model_id" ref="model_hcdi_training_history"/>
         <field name="domain_force">['|', ('employee_id.department_id.manager_id.user_id', '=', user.id), ('employee_id.user_id', '=', user.id)]</field>
-        <field name="groups" eval="[(4, ref('group_hcdi_training_manager'))]"/>
+        <field name="groups" eval="[(6, 0, [ref('group_hcdi_training_manager')])]"/>
         <field name="perm_read" eval="True"/>
         <field name="perm_write" eval="True"/>
         <field name="perm_create" eval="True"/>
@@ -72,7 +79,7 @@
         <field name="name">Training History: HR (All)</field>
         <field name="model_id" ref="model_hcdi_training_history"/>
         <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="groups" eval="[(4, ref('group_hcdi_training_hr'))]"/>
+        <field name="groups" eval="[(6, 0, [ref('group_hcdi_training_hr')])]"/>
         <field name="perm_read" eval="True"/>
         <field name="perm_write" eval="True"/>
         <field name="perm_create" eval="True"/>
@@ -86,7 +93,7 @@
         <field name="name">TNA Request: Manager (Own &amp; Department Only)</field>
         <field name="model_id" ref="model_hcdi_training_request"/>
         <field name="domain_force">['|', ('manager_id', '=', user.id), ('department_id.manager_id.user_id', '=', user.id)]</field>
-        <field name="groups" eval="[(4, ref('group_hcdi_training_manager'))]"/>
+        <field name="groups" eval="[(6, 0, [ref('group_hcdi_training_manager')])]"/>
         <field name="perm_read" eval="True"/>
         <field name="perm_write" eval="True"/>
         <field name="perm_create" eval="True"/>
@@ -98,10 +105,26 @@
         <field name="name">TNA Request: HR (All)</field>
         <field name="model_id" ref="model_hcdi_training_request"/>
         <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="groups" eval="[(4, ref('group_hcdi_training_hr'))]"/>
+        <field name="groups" eval="[(6, 0, [ref('group_hcdi_training_hr')])]"/>
         <field name="perm_read" eval="True"/>
         <field name="perm_write" eval="True"/>
         <field name="perm_create" eval="True"/>
         <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- Rule slide.channel for HCDI Training users: Allow read access to all courses -->
+    <record id="rule_slide_channel_hcdi_read" model="ir.rule">
+        <field name="name">eLearning Course: HCDI Users Read All</field>
+        <field name="model_id" ref="website_slides.model_slide_channel"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(6, 0, [
+            ref('group_hcdi_training_employee'),
+            ref('group_hcdi_training_trainer'),
+            ref('group_hcdi_training_manager')
+        ])]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
     </record>
 </odoo>

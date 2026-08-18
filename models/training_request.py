@@ -47,7 +47,7 @@ class HcdiTrainingRequest(models.Model):
         string='Estimated Training Date'
     )
     target_participant_ids = fields.Many2many(
-        'hr.employee',
+        'hr.employee.public',
         string='Training Participants'
     )
     attachment_ids = fields.Many2many(
@@ -179,14 +179,16 @@ class HcdiTrainingRequest(models.Model):
             # 2. Otomatis mendaftarkan akun Partner seluruh Calon Peserta ke daftar Anggota Resmi Course eLearning (slide.channel.partner)
             # PENJELASAN KODE: Tanpa logika ini, Odoo akan mengunci materi & ujian dari peserta karena menganggap mereka "Belum Terdaftar (Not Enrolled)".
             # Dengan _action_add_members(), seluruh Calon Peserta otomatis bisa membuka & mengerjakan soal ujian di portal Odoo.
-            participant_partners = rec.target_participant_ids.mapped(
+            # 2. Otomatis mendaftarkan partner karyawan sebagai anggota resmi Course eLearning agar bisa mengerjakan ujian di portal
+            employees = self.env['hr.employee'].sudo().browse(rec.target_participant_ids.ids)
+            participant_partners = employees.mapped(
                 lambda emp: emp.work_contact_id or (emp.user_id and emp.user_id.partner_id)
             ).filtered(lambda p: p)
             if participant_partners:
                 new_course._action_add_members(participant_partners)
 
-            # 3. Otomatis mendaftarkan seluruh Calon Peserta ke Progres Training (hcdi.training.history) dengan status 'draft'///
-            history_obj = self.env['hcdi.training.history']
+            # 3. Otomatis mendaftarkan seluruh Calon Peserta ke Progres Training (hcdi.training.history) dengan status 'draft'
+            history_obj = self.env['hcdi.training.history'].sudo()
             created_count = 0
             for participant in rec.target_participant_ids:
                 existing = history_obj.search([

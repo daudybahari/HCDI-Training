@@ -18,6 +18,17 @@ class SlideChannelPartner(models.Model):
                 ('user_id.partner_id', '=', record.partner_id.id)
             ], limit=1)
             if employee:
+                # 1. Jangan masukkan Trainer/Responsible course ke dalam progress training
+                if employee.user_id and employee.user_id == record.channel_id.user_id:
+                    continue
+                
+                # 2. Jika course dibuat dari TNA Request, hanya masukkan yang memang terdaftar sebagai peserta
+                tna_request = self.env['hcdi.training.request'].sudo().search([
+                    ('course_id', '=', record.channel_id.id)
+                ], limit=1)
+                if tna_request and employee.id not in tna_request.target_participant_ids.ids:
+                    continue
+
                 # Daftarkan ke hcdi.training.history jika belum ada
                 history_obj = self.env['hcdi.training.history']
                 existing = history_obj.search([

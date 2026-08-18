@@ -20,6 +20,7 @@ Fitur Utama:
         'base',
         'hr',
         'website_slides',
+        'website_slides_survey', # Bridge module linking website_slides and survey
         'survey',
         'mail',
         'document_approval', # SPR0-01: Cybrosys Document Approval Module
