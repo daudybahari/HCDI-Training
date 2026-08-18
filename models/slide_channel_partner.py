@@ -23,9 +23,13 @@ class SlideChannelPartner(models.Model):
                     continue
                 
                 # 2. Jika course dibuat dari TNA Request, hanya masukkan yang memang terdaftar sebagai peserta
-                tna_request = self.env['hcdi.training.request'].sudo().search([
-                    ('course_id', '=', record.channel_id.id)
-                ], limit=1)
+                tna_request_id = self.env.context.get('from_tna_request_id')
+                if tna_request_id:
+                    tna_request = self.env['hcdi.training.request'].sudo().browse(tna_request_id)
+                else:
+                    tna_request = self.env['hcdi.training.request'].sudo().search([
+                        ('course_id', '=', record.channel_id.id)
+                    ], limit=1)
                 if tna_request and employee.id not in tna_request.target_participant_ids.ids:
                     continue
 

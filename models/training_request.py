@@ -169,7 +169,7 @@ class HcdiTrainingRequest(models.Model):
                 raise UserError(_("Silakan tentukan 'Trainer Pelatihan' terlebih dahulu sebelum membuat Course eLearning!"))
 
             # 1. Buat Course pada modul eLearning (slide.channel) dengan Trainer yang ditunjuk oleh HR
-            new_course = self.env['slide.channel'].create({
+            new_course = self.env['slide.channel'].with_context(from_tna_request_id=rec.id).create({
                 'name': rec.name,
                 'description': rec.reason,
                 'user_id': rec.trainer_id.id, # Otomatis menjadi "Responsible" di tampilan Course!
